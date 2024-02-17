@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+ <head>
+    <title>Snake Game</title>
+    <style>
+      canvas {
+        display: block;
+        margin: auto;
+        p {
+      color: aquamarine;
+    }
+
+    h1 {
+      color: red;
+    }
+
+    .body {
+      background-image:url("müzik3.jpg");
+    }
+      }
+    </style>
+ </head>
+ <body src="beyin.jpg">
+    <canvas id="snakeGame" width="500" height="500"></canvas>
+    <script>const canvas = document.getElementById('snakeGame');
+      const ctx = canvas.getContext('2d');
+      let game = {
+       snake: [
+          { x: 300, y: 200 },
+          { x: 300, y: 200 },
+          { x: 300, y: 200 },
+       ],
+       food: { x: 300, y: 300 },
+       direction: 'RIGHT',
+       speed: 100,
+      };
+      function draw() {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+         
+          ctx.fillStyle = 'blue';
+          for (let segment of game.snake) {
+             ctx.fillRect(segment.x, segment.y, 10, 10);
+          }
+         
+          ctx.fillStyle = 'yellow';
+          ctx.fillRect(game.food.x, game.food.y, 10, 10);
+         }
+         function update() {
+          // Calculate new head position based on the current direction
+          let head = { x: game.snake[0].x, y: game.snake[0].y };
+          switch (game.direction) {
+             case 'RIGHT':
+                head.x += 10;
+                break;
+             case 'LEFT':
+                head.x -= 10;
+                break;
+             case 'UP':
+                head.y -= 10;
+                break;
+             case 'DOWN':
+                head.y += 10;
+                break;
+          }
+         
+          // Check if the snake collides with the food
+          if (head.x === game.food.x && head.y === game.food.y) {
+             // Increase the length of the snake and create new food
+             game.snake.unshift(head);
+             createFood();
+          } else {
+             // Move the snake by removing the last segment and adding the new head to the beginning
+             game.snake.pop();
+             game.snake.unshift(head);
+          }
+         
+          // Check if the snake collides with itself or the wall
+          if (head.x < 0 || head.x >= canvas.width || head.y < 0 || head.y >= canvas.height || checkCollision(head, game.snake.slice(1))) {
+             // If a collision is detected, reset the game
+             game.snake = [
+                { x: 200, y: 200 },
+                { x: 200, y: 200 },
+                { x: 200, y: 200 },
+             ];
+             game.direction = 'RIGHT';
+             createFood();
+          }
+         }
+         document.addEventListener('keydown', event => {
+          if (event.key === 'ArrowUp' && game.direction !== 'DOWN') {
+             game.direction = 'UP';
+          } else if (event.key === 'ArrowDown' && game.direction !== 'UP') {
+             game.direction = 'DOWN';
+          } else if (event.key === 'ArrowLeft' && game.direction !== 'RIGHT') {
+             game.direction = 'LEFT';
+          } else if (event.key === 'ArrowRight' && game.direction !== 'LEFT') {
+             game.direction = 'RIGHT';
+          }
+         });
+         function checkCollision(segment, snake) {
+          for (let i = 0; i < snake.length; i++) {
+             if (segment.x === snake[i].x && segment.y === snake[i].y) {
+                return true;
+             }
+          }
+          return false;
+         }
+         function createFood() {
+          game.food = {
+             x: Math.floor(Math.random() * (canvas.width / 100)) * 100,
+             y: Math.floor(Math.random() * (canvas.height / 100)) * 100,
+          };
+         }
+         draw();
+      update();
+      createFood();
+      
+      setInterval(() => {
+       draw();
+       update();
+      }, game.speed);
+      
+      
+      </script>
+ </body>
+</html>
